@@ -16,7 +16,7 @@ config :oli, Oli.Repo,
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
 config :oli, OliWeb.Endpoint,
-  http: [port: 4000],
+  http: [port: 80],
   url: [host: "localhost"],
   https: [
     port: 443,
