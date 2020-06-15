@@ -1,0 +1,13 @@
+{
+  "id": "oli_iframe",
+  "friendlyName": "IFrame",
+  "description": "A activity displayed via an IFrame",
+  "delivery": {
+    "element": "oli-iframe-delivery",
+    "entry": "./delivery-entry.ts"
+  },
+  "authoring": {
+    "element": "oli-iframe-authoring",
+    "entry": "./authoring-entry.ts"
+  }
+}
