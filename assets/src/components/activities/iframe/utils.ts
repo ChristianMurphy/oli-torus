@@ -42,3 +42,9 @@ export const feedback = (text: string, match: string | number, score: number = 0
   match,
   score,
 });
+
+export const initialize = (url: string) => {
+
+
+
+};
