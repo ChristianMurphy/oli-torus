@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { DeliveryElement, DeliveryElementProps } from '../DeliveryElement';
 import { IframeModelSchema } from './schema';
 import * as ActivityTypes from '../types';
 
 const IFrame = (props: DeliveryElementProps<IframeModelSchema>) => {
+
+  const [posted, setPosted] = useState(false);
+
+  useEffect(() => {
+
+    if (!posted) {
+
+
+      setPosted(true);
+    }
+
+  });
 
   return (
     <div>
