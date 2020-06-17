@@ -1,6 +1,6 @@
 import guid from 'utils/guid';
 import * as ContentModel from 'data/content/model';
-import { IframeModelSchema } from './schema';
+import { IframeModelSchema, Parameter } from './schema';
 import { RichText, ScoringStrategy } from '../types';
 
 export const makeResponse = (rule: string, score: number, text: '') =>
@@ -10,6 +10,7 @@ export const defaultModel : () => IframeModelSchema = () => {
 
   return {
     url: '',
+    parameters: [],
     authoring: {
       parts: [{
         id: '1',
@@ -53,7 +54,13 @@ export type UserDetails = {
 };
 
 export const createPostBody = (
-  activityAttemptGuid: string, partAttemptGuid: string, userDetail: UserDetails) => {
+  activityAttemptGuid: string, partAttemptGuid: string, parameters: Parameter[],
+  userDetail: UserDetails) => {
+
+  const custom = parameters.reduce((m, p) => {
+    m[p.key] = p.value;
+    return m;
+  }, {} as any);
 
   return JSON.stringify({
     iss: 'https://platform.example.edu',
@@ -112,10 +119,7 @@ export const createPostBody = (
       width: 240,
       return_url: `https://tokamak.oli.cmu.edu/api/v1/attempt/activity/${activityAttemptGuid}/part/${partAttemptGuid}/outcome`,
     },
-    'https://purl.imsglobal.org/spec/lti/claim/custom': {
-      xstart: '2017-04-21T01:00:00Z',
-      request_url: 'https://tool.com/link/123',
-    },
+    'https://purl.imsglobal.org/spec/lti/claim/custom': custom,
     'https://purl.imsglobal.org/spec/lti/claim/lis': {
       person_sourcedid: 'example.edu:71ee7e42-f6d2-414a-80db-b69ac2defd4',
       course_offering_sourcedid: 'example.edu:SI182-F16',

@@ -3,12 +3,14 @@ import ReactDOM from 'react-dom';
 import { DeliveryElement, DeliveryElementProps } from '../DeliveryElement';
 import { IframeModelSchema } from './schema';
 import { createPostBody, UserDetails } from './utils';
+import guid from 'utils/guid';
 import * as ActivityTypes from '../types';
 
-
+// React component to render an iframe and issue a form POST to the iframe
 const IFrame = (props: DeliveryElementProps<IframeModelSchema>) => {
 
   const [posted, setPosted] = useState(false);
+  const [id, setId] = useState(guid());
 
   useEffect(() => {
 
@@ -26,9 +28,10 @@ const IFrame = (props: DeliveryElementProps<IframeModelSchema>) => {
       const body = createPostBody(
         props.state.attemptGuid,
         props.state.parts[0].attemptGuid,
+        props.model.parameters,
         userDetail);
 
-      const el = document.getElementById('post');
+      const el = document.getElementById(id);
       (el as any).id_token.value = body;
       (el as any).submit();
 
@@ -39,16 +42,16 @@ const IFrame = (props: DeliveryElementProps<IframeModelSchema>) => {
 
   return (
     <div>
-      <form id="post" target="activity"
-        action="/protolaunch" method="POST">
+      <form id={id} target={'iframe_' + id}
+        action={props.model.url} method="POST">
         <input type="hidden" name="id_token" />
-        <input type="submit" />
       </form>
-      <iframe name="activity" src="#"/>
+      <iframe name={'iframe_' + id} src="#"/>
     </div>
   );
 };
 
+// The web component - a thin wrapper around the underlying React component.
 export class IFrameDelivery extends DeliveryElement<IframeModelSchema> {
   render(mountPoint: HTMLDivElement, props: DeliveryElementProps<IframeModelSchema>) {
     ReactDOM.render(<IFrame {...props} />, mountPoint);
