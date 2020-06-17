@@ -6,7 +6,7 @@ import { RichText, ScoringStrategy } from '../types';
 export const makeResponse = (rule: string, score: number, text: '') =>
   ({ id: guid(), rule, score, feedback: fromText(text) });
 
-export const defaultMCModel : () => IframeModelSchema = () => {
+export const defaultModel : () => IframeModelSchema = () => {
 
   return {
     url: '',
@@ -43,11 +43,7 @@ export const feedback = (text: string, match: string | number, score: number = 0
   score,
 });
 
-export const initialize = (url: string) => {
-
-};
-
-type UserDetails = {
+export type UserDetails = {
   name: string,
   givenName: string,
   familyName: string,
@@ -56,10 +52,10 @@ type UserDetails = {
   email: string,
 };
 
-const createPostBody = (
+export const createPostBody = (
   activityAttemptGuid: string, partAttemptGuid: string, userDetail: UserDetails) => {
 
-  return {
+  return JSON.stringify({
     iss: 'https://platform.example.edu',
     sub: 'a6d5c443-1f51-4783-ba1a-7686ffe3b54a',
     aud: ['962fa4d8-bcbf-49a0-94b2-2de05ad274af'],
@@ -128,5 +124,5 @@ const createPostBody = (
     'http://www.ExamplePlatformVendor.com/session': {
       id: '89023sj890dju080',
     },
-  };
+  });
 };

@@ -35,6 +35,8 @@ export interface PartActivityResponse extends Success {
 }
 
 export interface DeliveryElementProps<T extends ActivityModelSchema> {
+
+  ltiParams: any;
   graded: boolean;
   model: T;
   state: ActivityState;
@@ -116,8 +118,10 @@ export abstract class DeliveryElement<T extends ActivityModelSchema> extends HTM
     const model = JSON.parse(this.getAttribute('model') as any);
     const graded = JSON.parse(this.getAttribute('graded') as any);
     const state = JSON.parse(this.getAttribute('state') as any) as ActivityState;
+    const ltiParams = JSON.parse(this.getAttribute('ltiParams') as any);
 
     return {
+      ltiParams,
       graded,
       model,
       state,
@@ -158,5 +162,5 @@ export abstract class DeliveryElement<T extends ActivityModelSchema> extends HTM
     }
   }
 
-  static get observedAttributes() { return ['model', 'state']; }
+  static get observedAttributes() { return ['model', 'state', 'ltiParams']; }
 }

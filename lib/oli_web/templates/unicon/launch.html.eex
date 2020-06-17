@@ -1,0 +1,4 @@
+
+<h3>Launch successful</h3>
+
+<%= raw(@params) %>

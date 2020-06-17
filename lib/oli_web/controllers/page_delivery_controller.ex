@@ -83,7 +83,9 @@ defmodule OliWeb.PageDeliveryController do
   # This case handles :in_progress and :revised progress states
   defp render_page(%PageContext{} = context, conn, context_id, user) do
 
-    render_context = %Context{user: user, activity_map: context.activities}
+    lti_params = get_session(conn, :lti_params)
+
+    render_context = %Context{user: user, activity_map: context.activities, lti_params: lti_params}
     page_model = Map.get(context.page.content, "model")
     html = Page.render(render_context, page_model, Page.Html)
 

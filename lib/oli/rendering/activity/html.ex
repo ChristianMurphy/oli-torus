@@ -4,12 +4,13 @@ defmodule Oli.Rendering.Activity.Html do
   """
   alias Oli.Utils
   alias Oli.Rendering.Context
+  alias Phoenix.HTML
 
   require Logger
 
   @behaviour Oli.Rendering.Activity
 
-  def activity(%Context{activity_map: activity_map, render_opts: render_opts} = context, %{"activity_id" => activity_id, "purpose" => purpose} = activity) do
+  def activity(%Context{activity_map: activity_map, lti_params: lti_params, render_opts: render_opts} = context, %{"activity_id" => activity_id, "purpose" => purpose} = activity) do
     activity_summary = activity_map[activity_id]
 
     case activity_summary do
@@ -28,8 +29,9 @@ defmodule Oli.Rendering.Activity.Html do
         state = activity_summary.state
         graded = activity_summary.graded
         model_json = activity_summary.model
+        encoded_lti = encode_object(lti_params)
 
-        activity_html = ["<#{tag} class=\"activity\" graded=\"#{graded}\" state=\"#{state}\" model=\"#{model_json}\"></#{tag}>\n"]
+        activity_html = ["<#{tag} class=\"activity\" graded=\"#{graded}\" state=\"#{state}\" model=\"#{model_json}\" ltiParams=\"#{encoded_lti}\"></#{tag}>\n"]
 
         case purpose do
           "None" ->
@@ -47,6 +49,18 @@ defmodule Oli.Rendering.Activity.Html do
       {_, error_id, _error_msg} ->
         ["<div class=\"activity error\">This activity could not be rendered. Please contact support with issue ##{error_id}</div>\n"]
     end
+  end
+
+  defp encode_object(map) do
+    case Jason.encode(map) do
+      {:ok, s} -> s |> encode()
+      {:error, _} -> "{ \"error\": true }" |> encode()
+    end
+  end
+
+  defp encode(s) do
+    {:safe, encoded} = HTML.html_escape(s)
+    IO.iodata_to_binary(encoded)
   end
 
 end

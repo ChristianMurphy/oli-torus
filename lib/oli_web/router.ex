@@ -104,7 +104,15 @@ defmodule OliWeb.Router do
     get "/projects", WorkspaceController, :projects
     get "/account", WorkspaceController, :account
     post "/account/theme", WorkspaceController, :update_theme
+
+
     resources "/institutions", InstitutionController
+  end
+
+  scope "/protolaunch", OliWeb do
+    pipe_through [:browser, :workspace, :authoring]
+
+    post "/", UniconController, :launch
   end
 
   scope "/project", OliWeb do
