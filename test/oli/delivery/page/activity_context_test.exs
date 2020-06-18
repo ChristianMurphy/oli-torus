@@ -33,13 +33,15 @@ defmodule Oli.Delivery.Page.ActivityContextTest do
 
     test "create_context_map/2 returns the activities mapped correctly", %{attempt1: attempt1, a1: a1} do
 
+      token_generator = fn _ -> "token" end
+
       latest_attempts = Attempts.get_latest_attempts(attempt1.id)
-      m = ActivityContext.create_context_map(false, latest_attempts)
+      m = ActivityContext.create_context_map(false, latest_attempts, token_generator)
 
       assert length(Map.keys(m)) == 1
       assert Map.get(m, a1.resource.id).model == "{&quot;stem&quot;:&quot;1&quot;}"
-      assert Map.get(m, a1.resource.id).delivery_element == "oli-multiple-choice-delivery"
-      assert Map.get(m, a1.resource.id).script == "oli_multiple_choice_delivery.js"
+      assert Map.get(m, a1.resource.id).delivery_element == "oli-iframe-delivery"
+      assert Map.get(m, a1.resource.id).script == "oli_iframe_delivery.js"
 
     end
 

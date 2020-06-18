@@ -16,7 +16,7 @@ defmodule Oli.Delivery.Page.ActivityContext do
   off of the supplied list of activity ids and a map of resource ids to
   resolved revisions.
   """
-  @spec create_context_map(boolean(), %{}) :: %{}
+  @spec create_context_map(boolean(), map(), any()) :: map()
   def create_context_map(graded, latest_attempts, token_generator) do
 
     # get a view of all current registered activity types

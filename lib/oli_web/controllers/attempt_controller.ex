@@ -122,8 +122,13 @@ defmodule OliWeb.AttemptController do
 
     lti_params = Plug.Conn.get_session(conn, :lti_params)
     context_id = lti_params["context_id"]
+    user = conn.assigns.current_user
 
-    case Attempts.reset_activity(context_id, attempt_guid) do
+    token_generator = fn attempt_guid ->
+      OliWeb.Auth.ActivityToken.generate_token(attempt_guid, context_id, user.id)
+    end
+
+    case Attempts.reset_activity(context_id, attempt_guid, token_generator) do
       {:ok, {attempt_state, model}} -> json conn, %{ "type" => "success", "attemptState" => attempt_state, "model" => model}
       {:error, _} -> error(conn, 500, "server error")
     end

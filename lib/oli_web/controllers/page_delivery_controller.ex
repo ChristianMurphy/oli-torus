@@ -154,7 +154,10 @@ defmodule OliWeb.PageDeliveryController do
 
   def after_finalized(conn, context_id, revision_slug, user_id) do
 
-    context = PageContext.create_page_context(context_id, revision_slug, user_id)
+    token_generator = fn attempt_guid ->
+      OliWeb.Auth.ActivityToken.generate_token(attempt_guid, context_id, user_id)
+    end
+    context = PageContext.create_page_context(context_id, revision_slug, user_id, token_generator)
 
     message = if context.page.max_attempts == 0 do
       "You have an unlimited number of attempts remaining"

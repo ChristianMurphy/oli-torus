@@ -32,7 +32,7 @@ defmodule Oli.Delivery.Attempts do
 
   `{:error, {:not_found}}`
   """
-  def reset_activity(context_id, activity_attempt_guid) do
+  def reset_activity(context_id, activity_attempt_guid, token_generator) do
 
     Repo.transaction(fn ->
 
@@ -92,7 +92,7 @@ defmodule Oli.Delivery.Attempts do
               {:error, error} -> Repo.rollback(error)
             end
 
-            {ActivityState.from_attempt(new_activity_attempt, new_part_attempts, model),
+            {ActivityState.from_attempt(new_activity_attempt, new_part_attempts, model, token_generator),
               ModelPruner.prune(transformed_model)}
 
           else

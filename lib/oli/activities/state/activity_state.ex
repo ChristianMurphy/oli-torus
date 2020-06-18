@@ -27,7 +27,7 @@ defmodule Oli.Activities.State.ActivityState do
     :parts
   ]
 
-  @spec from_attempt(Oli.Delivery.Attempts.ActivityAttempt.t(), [Oli.Delivery.Attempts.PartAttempt.t()], Oli.Activities.Model.t()) ::
+  @spec from_attempt(Oli.Delivery.Attempts.ActivityAttempt.t(), [Oli.Delivery.Attempts.PartAttempt.t()], Oli.Activities.Model.t(), any()) ::
           %Oli.Activities.State.ActivityState{}
   def from_attempt(%ActivityAttempt{} = attempt, part_attempts, %Model{} = model, token_generator) do
 

@@ -1,4 +1,35 @@
 
 <h3>Launch successful</h3>
 
-<%= raw(@params) %>
+<button class="btn btn-primary" onClick="submitOutcome()">Submit Outcome</button>
+
+<script>
+
+function submitOutcome() {
+
+  const params = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer <%= @token %>',
+    },
+    body: JSON.stringify([{
+      "id": "https://lms.example.com/context/2923/lineitems/1/results/5323497",
+      "scoreOf": "https://lms.example.com/context/2923/lineitems/1",
+      "userId": "5323497",
+      "resultScore": 0.83,
+      "resultMaximum": 1,
+      "comment": "This is exceptional work."
+    }]),
+  };
+  window.fetch('<%= @url %>', params)
+    .then(response => response.json())
+    .then(result => {
+      console.log(result);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+
+}
+</script>

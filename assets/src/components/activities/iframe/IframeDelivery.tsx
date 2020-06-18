@@ -26,6 +26,7 @@ const IFrame = (props: DeliveryElementProps<IframeModelSchema>) => {
         context_title: props.ltiParams.context_title,
         resource_link_id: props.ltiParams.resource_link_id,
         resource_link_title: props.ltiParams.resource_link_title,
+        host: window.location.protocol + '//' + window.location.host,
       };
 
       const body = createPostBody(
