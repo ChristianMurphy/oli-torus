@@ -1,6 +1,29 @@
 
 <h3>Launch successful</h3>
 
+<label>Lineitem URL</label>
+<code style="background-color: gray;">
+<pre>
+<%= @url %>
+</pre>
+</code>
+
+<label>Token</label>
+<code style="background-color: gray;">
+<pre>
+<%= @token %>
+</pre>
+</code>
+
+<label>Parameters</label>
+<%= for {k, v} <- @claims do %>
+<code style="background-color: gray;">
+<pre>
+<%= k %>: <%= v %>
+</pre>
+</code>
+<% end %>
+
 <button class="btn btn-primary" onClick="submitOutcome()">Submit Outcome</button>
 
 <script>

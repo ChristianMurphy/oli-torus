@@ -16,6 +16,9 @@ const IFrame = (props: DeliveryElementProps<IframeModelSchema>) => {
 
     if (!posted && props.ltiParams !== null) {
 
+      // Give a peek at the current activity state
+      console.log(props.state);
+
       // Assemble the body of the POST request that will init
       // the iframe psuedo-LTI activity
       const context : PostContext = {
@@ -53,7 +56,7 @@ const IFrame = (props: DeliveryElementProps<IframeModelSchema>) => {
         action={props.model.url} method="POST">
         <input type="hidden" name="id_token" />
       </form>
-      <iframe name={'iframe_' + id} src="#"/>
+      <iframe height="600" width="800" name={'iframe_' + id} src="#"/>
     </div>
   );
 };

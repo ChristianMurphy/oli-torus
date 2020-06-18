@@ -692,9 +692,9 @@ defmodule Oli.Delivery.Attempts do
       end
       no_roll_up = fn result -> result end
 
-      part_inputs = [%{attempt_guid: part_attempt_guid}]
+      part_inputs = [%{attempt_guid: part_attempt_guid, input: %StudentInput{input: ""}}]
 
-      {roll_up_fn, _} = case filter_already_submitted(part_inputs, part_attempts) do
+      {roll_up_fn, part_inputs} = case filter_already_submitted(part_inputs, part_attempts) do
         {true, part_inputs} -> {roll_up, part_inputs}
         {false, part_inputs} -> {no_roll_up, part_inputs}
       end

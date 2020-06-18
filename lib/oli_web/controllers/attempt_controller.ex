@@ -59,9 +59,7 @@ defmodule OliWeb.AttemptController do
   def outcome(conn, %{
     "activity_attempt_guid" => activity_attempt_guid,
     "part_attempt_guid" => part_attempt_guid,
-    "resultScore" => score,
-    "resultMaximum" => out_of,
-    "comment" => comment}) do
+    "_json" => [%{"comment" => comment, "resultMaximum" => out_of, "resultScore" => score}]}) do
 
     case get_auth_token(conn, activity_attempt_guid) do
       {:ok, {context_id, user_id}} -> case Attempts.submit_outcome(
