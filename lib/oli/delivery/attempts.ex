@@ -680,6 +680,41 @@ defmodule Oli.Delivery.Attempts do
 
   end
 
+  def submit_outcome(role, context_id, activity_attempt_guid, part_attempt_guid, score, out_of, comment) do
+
+    Repo.transaction(fn ->
+
+      part_attempts = get_latest_part_attempts(activity_attempt_guid)
+
+      roll_up = fn result ->
+        rollup_part_attempt_evaluations(activity_attempt_guid)
+        result
+      end
+      no_roll_up = fn result -> result end
+
+      part_inputs = [%{attempt_guid: part_attempt_guid}]
+
+      {roll_up_fn, _} = case filter_already_submitted(part_inputs, part_attempts) do
+        {true, part_inputs} -> {roll_up, part_inputs}
+        {false, part_inputs} -> {no_roll_up, part_inputs}
+      end
+
+      mock_evaluation = {:ok,  {%Feedback{id: activity_attempt_guid, content: comment},
+        %Result{out_of: out_of, score: score}}}
+
+      evaluations = {:ok, [mock_evaluation]}
+
+      case persist_evaluations(evaluations, part_inputs, roll_up_fn)
+      |> generate_snapshots(role, context_id, part_inputs) do
+
+        {:ok, results} -> results
+        {:error, error} -> Repo.rollback(error)
+      end
+
+    end)
+
+  end
+
   def submit_graded_page(role, context_id, resource_attempt_guid) do
 
     Repo.transaction(fn ->

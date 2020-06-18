@@ -38,7 +38,11 @@ defmodule OliWeb.PageDeliveryController do
 
     if Sections.is_enrolled?(user.id, context_id) do
 
-      PageContext.create_page_context(context_id, revision_slug, user.id)
+      token_generator = fn attempt_guid ->
+        OliWeb.Auth.ActivityToken.generate_token(attempt_guid, context_id, user.id)
+      end
+
+      PageContext.create_page_context(context_id, revision_slug, user.id, token_generator)
       |> render_page(conn, context_id, user)
 
     else
@@ -225,7 +229,6 @@ defmodule OliWeb.PageDeliveryController do
         section = Sections.get_section_by(context_id: context_id)
         token = conn.params["token"]
 
-        IO.inspect conn
         Sections.update_section(section, %{canvas_token: token})
 
         conn

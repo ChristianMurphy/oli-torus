@@ -53,6 +53,7 @@ export interface PartState {
 }
 
 export interface ActivityState {
+  accessToken: string;
   attemptGuid: string;
   attemptNumber: number;
   dateEvaluated: Date | null;

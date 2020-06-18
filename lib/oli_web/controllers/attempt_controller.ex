@@ -3,6 +3,29 @@ defmodule OliWeb.AttemptController do
 
   alias Oli.Delivery.Attempts
   alias Oli.Delivery.Attempts.StudentInput
+  alias Oli.Delivery.Sections
+
+  def get_auth_token(conn, attempt_guid) do
+    case extract_token(conn) do
+      {:ok, token} -> OliWeb.Auth.ActivityToken.verify_token(token, attempt_guid)
+      error -> error
+    end
+  end
+
+  defp extract_token(conn) do
+    case Plug.Conn.get_req_header(conn, "authorization") do
+      [auth_header] -> get_token_from_header(auth_header)
+       _ -> {:error, :missing_auth_header}
+    end
+  end
+
+  defp get_token_from_header(auth_header) do
+    {:ok, reg} = Regex.compile("Bearer\:?\s+(.*)$", "i")
+    case Regex.run(reg, auth_header) do
+      [_, match] -> {:ok, String.trim(match)}
+      _ -> {:error, "token not found"}
+    end
+  end
 
   def save_part(conn, %{"activity_attempt_guid" => _attempt_guid, "part_attempt_guid" => part_attempt_guid, "response" => response}) do
 
@@ -22,6 +45,32 @@ defmodule OliWeb.AttemptController do
     case Attempts.submit_part_evaluations(role, context_id, activity_attempt_guid, [%{attempt_guid: attempt_guid, input: input}]) do
       {:ok, evaluations} -> json conn, %{ "type" => "success", "evaluations" => evaluations}
       {:error, _} -> error(conn, 500, "server error")
+    end
+
+  end
+
+  defp determine_role(user_id, context_id) do
+    case Sections.is_enrolled_as?(user_id, context_id, Oli.Delivery.Sections.SectionRoles.get_by_type("student")) do
+      true -> :student
+      false -> :instructor
+    end
+  end
+
+  def outcome(conn, %{
+    "activity_attempt_guid" => activity_attempt_guid,
+    "part_attempt_guid" => part_attempt_guid,
+    "resultScore" => score,
+    "resultMaximum" => out_of,
+    "comment" => comment}) do
+
+    case get_auth_token(conn, activity_attempt_guid) do
+      {:ok, {context_id, user_id}} -> case Attempts.submit_outcome(
+        determine_role(user_id, context_id), context_id, activity_attempt_guid, part_attempt_guid, score, out_of, comment) do
+
+        {:ok, _} -> json conn, %{ "type" => "success"}
+        {:error, _} -> error(conn, 500, "server error")
+      end
+      {:error, _} -> error(conn, 400, "client token error")
     end
 
   end

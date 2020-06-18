@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { DeliveryElement, DeliveryElementProps } from '../DeliveryElement';
 import { IframeModelSchema } from './schema';
-import { createPostBody, UserDetails } from './utils';
+import { createPostBody, PostContext } from './utils';
 import guid from 'utils/guid';
 import * as ActivityTypes from '../types';
 
@@ -16,21 +16,27 @@ const IFrame = (props: DeliveryElementProps<IframeModelSchema>) => {
 
     if (!posted && props.ltiParams !== null) {
 
-      const userDetail : UserDetails = {
+      // Assemble the body of the POST request that will init
+      // the iframe psuedo-LTI activity
+      const context : PostContext = {
         name: props.ltiParams.lis_person_name_full,
-        givenName: props.ltiParams.lis_person_name_given,
-        familyName: props.ltiParams.lis_person_name_family,
-        middleName: props.ltiParams.lis_person_name_full,
-        picture: props.ltiParams.lis_person_name_full,
         email: props.ltiParams.user_image,
+        context_id: props.ltiParams.context_id,
+        context_label: props.ltiParams.context_label,
+        context_title: props.ltiParams.context_title,
+        resource_link_id: props.ltiParams.resource_link_id,
+        resource_link_title: props.ltiParams.resource_link_title,
       };
 
       const body = createPostBody(
+        props.state.accessToken,
         props.state.attemptGuid,
         props.state.parts[0].attemptGuid,
         props.model.parameters,
-        userDetail);
+        context);
 
+      // Now submit the form, targeting the iframe that we have
+      // rendered below
       const el = document.getElementById(id);
       (el as any).id_token.value = body;
       (el as any).submit();

@@ -24,8 +24,8 @@ defmodule Oli.Delivery.Page.PageContext do
   information is collected and then assembled in a fashion that can be given
   to a renderer.
   """
-  @spec create_page_context(String.t, String.t, any) :: %PageContext{}
-  def create_page_context(context_id, page_slug, user_id, container_id \\ nil) do
+  @spec create_page_context(String.t, String.t, any, any) :: %PageContext{}
+  def create_page_context(context_id, page_slug, user_id, token_generator, container_id \\ nil) do
 
     # resolve the page revision per context_id
     page_revision = DeliveryResolver.from_revision_slug(context_id, page_slug)
@@ -37,7 +37,7 @@ defmodule Oli.Delivery.Page.PageContext do
 
     {progress_state, resource_attempts, activities} = case Attempts.determine_resource_attempt_state(page_revision, context_id, user_id, activity_provider) do
       {:ok, {:not_started, {_, resource_attempts}}} -> {:not_started, resource_attempts, nil}
-      {:ok, {state, {resource_attempt, latest_attempts}}} -> {state, [resource_attempt], ActivityContext.create_context_map(page_revision.graded, latest_attempts)}
+      {:ok, {state, {resource_attempt, latest_attempts}}} -> {state, [resource_attempt], ActivityContext.create_context_map(page_revision.graded, latest_attempts, token_generator)}
       {:error, _} -> {:error, [], %{}}
     end
 

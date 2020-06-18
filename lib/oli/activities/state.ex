@@ -8,11 +8,11 @@ defmodule Oli.Activities.State do
   produce the corresponding activity state representation,
   returning those in a map of activity ids to the state.
   """
-  def from_attempts(latest_attempts) do
+  def from_attempts(latest_attempts, token_generator) do
     Enum.map(latest_attempts, fn {id, {activity_attempt, part_attempts}} ->
       {:ok, model} = Map.get(activity_attempt, :transformed_model) |> Model.parse()
 
-      {id, ActivityState.from_attempt(activity_attempt, Map.values(part_attempts), model)}
+      {id, ActivityState.from_attempt(activity_attempt, Map.values(part_attempts), model, token_generator)}
     end) |> Map.new
   end
 

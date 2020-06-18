@@ -5,6 +5,7 @@ defmodule Oli.Activities.State.ActivityState do
   alias Oli.Activities.Model
 
   @enforce_keys [
+    :accessToken,
     :attemptGuid,
     :attemptNumber,
     :dateEvaluated,
@@ -16,6 +17,7 @@ defmodule Oli.Activities.State.ActivityState do
 
   @derive Jason.Encoder
   defstruct [
+    :accessToken,
     :attemptGuid,
     :attemptNumber,
     :dateEvaluated,
@@ -27,7 +29,7 @@ defmodule Oli.Activities.State.ActivityState do
 
   @spec from_attempt(Oli.Delivery.Attempts.ActivityAttempt.t(), [Oli.Delivery.Attempts.PartAttempt.t()], Oli.Activities.Model.t()) ::
           %Oli.Activities.State.ActivityState{}
-  def from_attempt(%ActivityAttempt{} = attempt, part_attempts, %Model{} = model) do
+  def from_attempt(%ActivityAttempt{} = attempt, part_attempts, %Model{} = model, token_generator) do
 
     # Create the part states, and where we encounter parts from the model
     # that do not have an attempt we create the default state
@@ -40,6 +42,7 @@ defmodule Oli.Activities.State.ActivityState do
     end
 
     %Oli.Activities.State.ActivityState{
+      accessToken: token_generator.(attempt.attempt_guid),
       attemptGuid: attempt.attempt_guid,
       attemptNumber: attempt.attempt_number,
       dateEvaluated: attempt.date_evaluated,
