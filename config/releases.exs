@@ -38,8 +38,14 @@ host =
 
 config :oli, OliWeb.Endpoint,
   server: true,
-  http: [:inet6, port: String.to_integer(System.get_env("PORT") || "80")],
-  url: [host: host, port: String.to_integer(System.get_env("PORT") || "80")],
+  http: [
+    :inet6,
+    port: String.to_integer(System.get_env("PORT", "80"))
+  ],
+  url: [
+    host: host,
+    port: String.to_integer(System.get_env("PORT", "80"))
+  ],
   secret_key_base: secret_key_base,
   live_view: [signing_salt: live_view_salt]
 

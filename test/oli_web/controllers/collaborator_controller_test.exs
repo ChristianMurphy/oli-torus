@@ -1,7 +1,7 @@
 defmodule OliWeb.CollaboratorControllerTest do
   use OliWeb.ConnCase
 
-  @admin_email "admin@oli.cmu.edu"
+  @admin_email "admin@example.edu"
   @invalid_email "hey@example.com"
   setup [:author_project_conn]
 

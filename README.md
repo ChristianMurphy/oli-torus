@@ -8,14 +8,42 @@
 ## Getting Started
 
 ### Setup
-#### (Quick Start) Run development server with docker-compose
+#### (Quick Start) Run with docker-compose
+
+1. **Install dependencies**
+    - [Docker](https://www.docker.com/) and [docker-compose](https://docs.docker.com/compose/)
+
+1. **Initial setup**
+    ```
+    $ docker-compose up -d postgres
+    $
+    $ ## wait a few seconds for postgres to initialize
+    $ sleep 5
+    $
+    $ docker-compose run app bin/oli eval "Oli.ReleaseTasks.create"
+    $ docker-compose run app bin/oli eval "Oli.ReleaseTasks.migrate"
+    ```
+
+1. **Start**
+    ```
+    $ docker-compose up -d && docker-compose logs -f
+    ```
+    > NOTE: Use Ctrl+c to exit log streaming and `docker-compose down` to stop the server.
+
+1. Open web browser to `localhost` or whichever host/ip the server is running on
+
+#### Run development server with docker-compose
 
 1. Install dependencies:
-    - [Docker](https://www.docker.com/) and docker-compose
+    - [Docker](https://www.docker.com/) and [docker-compose](https://docs.docker.com/compose/)
 
 1. Initial setup
     ```
     $ docker-compose up -d postgres
+    $
+    $ ## wait a few seconds for postgres to initialize
+    $ sleep 5
+    $
     $ docker-compose run app mix ecto.create
     $ docker-compose run app mix ecto.migrate
     ```

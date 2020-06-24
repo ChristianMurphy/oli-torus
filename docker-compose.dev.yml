@@ -1,0 +1,47 @@
+version: '3.5'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: oli_app
+    ports:
+      - 4000:4000
+    env_file: ./oli.env
+    depends_on:
+      - postgres
+    volumes:
+      - ./:/usr/src/app
+      - app_node_modules:/usr/src/app/assets/node_modules
+      - app_deps:/usr/src/app/deps
+      - app_build:/usr/src/app/build
+
+  postgres:
+    image: postgres
+    container_name: oli_postgres
+    ports:
+      - 5432:5432
+    env_file: ./postgres.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  ## Additional Devtools
+
+  ## pgadmin for postgres SQL administration
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: oli_pgadmin
+    logging:
+      driver: none
+    ports:
+      - 4001:80
+    env_file: ./postgres.env
+    volumes:
+      - /var/lib/pgadmin
+      - ./pgadmin.servers.json:/pgadmin4/servers.json
+
+volumes:
+  postgres_data:
+  app_node_modules:
+  app_deps:
+  app_build:

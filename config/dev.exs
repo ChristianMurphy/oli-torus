@@ -6,10 +6,8 @@ config :oli,
 
 # Configure your database
 config :oli, Oli.Repo,
-  username: System.get_env("DB_USER", "postgres"),
-  password: System.get_env("DB_PASSWORD", "postgres"),
+  url: System.get_env("DATABASE_URL", "ecto://postgres:changeme@localhost/oli"),
   database: System.get_env("DB_NAME", "oli_dev"),
-  hostname: System.get_env("DB_HOST", "localhost"),
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
@@ -21,14 +19,15 @@ config :oli, Oli.Repo,
 # with webpack to recompile .js and .css sources.
 config :oli, OliWeb.Endpoint,
   http: [port: 4000],
-  url: [host: "localhost"],
   https: [
+    :inet6,
     port: 443,
     otp_app: :oli,
-    keyfile: "priv/ssl/localhost.key",
-    certfile: "priv/ssl/localhost.crt",
+    keyfile: System.get_env("SSL_KEY_PATH", "priv/ssl/localhost.key"),
+    certfile: System.get_env("SSL_CERT_PATH", "priv/ssl/localhost.crt"),
   ],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
+  secret_key_base: "GE9cpXBwVXNaplyUCYbIWqERmC/OlcR5iVMwLX9/W7gzQRxkD1ETjda9E0jW/BW1",
   debug_errors: true,
   code_reloader: true,
   check_origin: false,

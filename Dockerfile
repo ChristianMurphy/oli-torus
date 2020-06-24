@@ -1,31 +1,52 @@
-FROM elixir:1.10-slim
+FROM elixir:1.10.3-alpine AS build
 
-WORKDIR /usr/src/app
+# install build dependencies
+RUN apk add --no-cache build-base npm git python
 
-# Install system dependencies
-## General
-RUN apt-get update -y
-RUN apt-get install -y inotify-tools curl git npm bash
+# prepare build dir
+WORKDIR /app
 
-## Hex
-RUN mix local.hex --force
-RUN mix local.rebar --force
-RUN mix archive.install hex phx_new 1.5.0
+# install hex + rebar
+RUN mix local.hex --force && \
+    mix local.rebar --force
 
-## NodeJS
-RUN npm install -g n && n 12
+# set build ENV
+ENV MIX_ENV=prod
 
-# Copy all app files to image, excluding those in .dockerignore
-COPY . .
+# install mix dependencies
+COPY mix.exs mix.lock ./
+COPY config config
+RUN mix do deps.get, deps.compile
 
-# Install application dependencies
-RUN mix deps.get
-RUN cd assets && npm install
+# build assets
+COPY assets/package.json assets/package-lock.json ./assets/
+RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
 
-# Declare image volumes
-VOLUME ["/usr/src/app/deps"]
-VOLUME ["/usr/src/app/build"]
-VOLUME ["/usr/src/app/assets/node_modules"]
+COPY priv priv
+COPY assets assets
+RUN npm run --prefix ./assets deploy
+RUN mix phx.digest
 
-# Run Phoenix server on container start
-CMD [ "mix", "phx.server" ]
+# compile and build release
+COPY lib lib
+# uncomment COPY if rel/ exists
+# COPY rel rel
+RUN mix do compile, release
+
+# prepare release image
+FROM alpine:3.12 AS app
+RUN apk add --no-cache openssl ncurses-libs
+
+WORKDIR /app
+
+RUN chown nobody:nobody /app
+
+USER nobody:nobody
+
+COPY --from=build --chown=nobody:nobody /app/_build/prod/rel/oli ./
+
+ENV HOME=/app
+
+EXPOSE 4000
+
+CMD ["bin/oli", "start"]

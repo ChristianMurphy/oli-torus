@@ -16,7 +16,8 @@ config :oli, Oli.Repo,
 # you can enable the server option below.
 config :oli, OliWeb.Endpoint,
   http: [port: 4002],
-  server: false
+  server: false,
+  secret_key_base: "GE9cpXBwVXNaplyUCYbIWqERmC/OlcR5iVMwLX9/W7gzQRxkD1ETjda9E0jW/BW1"
 
 # Print only warnings and errors during test
 config :logger, level: :warn

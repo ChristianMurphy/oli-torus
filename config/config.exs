@@ -19,11 +19,29 @@ config :oli,
   local_activity_manifests: Path.wildcard(File.cwd! <> "/assets/src/components/activities/*/manifest.json")
     |> Enum.map(&File.read!/1)
 
+https = case System.get_env("ENABLE_HTTPS", "true") do
+  "true" -> [
+      :inet6,
+      port: 443,
+      otp_app: :oli,
+      keyfile: System.get_env("SSL_KEY_PATH", "priv/ssl/localhost.key"),
+      certfile: System.get_env("SSL_CERT_PATH", "priv/ssl/localhost.crt"),
+    ]
+  _ -> nil
+end
+
+force_ssl = case {System.get_env("ENABLE_HTTPS", "true"), System.get_env("FORCE_SSL", "true")} do
+  {"true", "true"} -> [rewrite_on: [:x_forwarded_proto]]
+  _ -> nil
+end
+
 # Configures the endpoint
 config :oli, OliWeb.Endpoint,
+  http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4000")],
+  url: [host: System.get_env("HOST") || "localhost"],
+  https: https,
+  force_ssl: force_ssl,
   live_view: [signing_salt: System.get_env("LIVE_VIEW_SALT") || "LIVE_VIEW_SALT"],
-  url: [host: "localhost"],
-  secret_key_base: "GE9cpXBwVXNaplyUCYbIWqERmC/OlcR5iVMwLX9/W7gzQRxkD1ETjda9E0jW/BW1",
   render_errors: [view: OliWeb.ErrorView, accepts: ~w(html json)],
   pubsub_server: Oli.PubSub
 
