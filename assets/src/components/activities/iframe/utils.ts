@@ -11,6 +11,7 @@ export const defaultModel : () => IframeModelSchema = () => {
 
   return {
     url: '',
+    responsive: '',
     parameters: [],
     authoring: {
       parts: [{

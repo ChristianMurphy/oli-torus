@@ -50,13 +50,26 @@ const IFrame = (props: DeliveryElementProps<IframeModelSchema>) => {
 
   });
 
+  let iframe = null;
+  if (props.model.responsive !== '') {
+    iframe = (
+      <div className={'embed-responsive embed-responsive-' + props.model.responsive}>
+        <iframe className="embed-responsive-item"
+          name={'iframe_' + id} src="#" frameBorder="0"/>
+      </div>
+    );
+  } else {
+    iframe = <iframe height="800" width="600"
+      name={'iframe_' + id} src="#" frameBorder="0"/>;
+  }
+
   return (
     <div>
       <form id={id} target={'iframe_' + id}
         action={props.model.url} method="POST">
         <input type="hidden" name="id_token" />
       </form>
-      <iframe height="600" width="800" name={'iframe_' + id} src="#"/>
+      {iframe}
     </div>
   );
 };

@@ -52,6 +52,12 @@ const IFrame = (props: AuthoringElementProps<IframeModelSchema>) => {
     setModel(model);
   };
 
+  const onResponsive = (e: any) => {
+    const model = Object.assign({}, props.model, { responsive: e.target.value });
+    props.onEdit(model);
+    setModel(model);
+  };
+
   const onEditParameter = (index: number, p: Parameter) => {
 
     const parameters = [...model.parameters];
@@ -82,6 +88,10 @@ const IFrame = (props: AuthoringElementProps<IframeModelSchema>) => {
     <div>
       <label>URL</label>
       <input className="form-control mb-4"  type="text" value={model.url} onChange={onChange}/>
+
+      <label>Responsiveness (try <code>16by9</code>)</label>
+      <input className="form-control mb-4"
+        type="text" value={model.responsive} onChange={onResponsive}/>
 
       <label>Parameters</label>
       {model.parameters.map((p, i) =>

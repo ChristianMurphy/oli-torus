@@ -9,6 +9,7 @@ export interface Parameter {
 
 export interface IframeModelSchema extends ActivityModelSchema {
   url: string;
+  responsive: string;
   parameters: Parameter[];
   authoring: {
     parts: Part[];
