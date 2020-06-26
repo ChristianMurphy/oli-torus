@@ -5,6 +5,7 @@ import { Editor as SlateEditor, Node, Range, Transforms } from 'slate';
 import { hoverMenuCommands } from './editors';
 import { ToolbarItem, gutterWidth, CommandContext } from './interfaces';
 import { getRootOfText } from './utils';
+import Popover from 'react-tiny-popover';
 
 const parentTextTypes = {
   p: true,
@@ -47,7 +48,8 @@ function shouldHideToolbar(editor: ReactEditor) {
   // 2. The editor is not currently in focus
   // 3. The selection range is collapsed
   // 4. The selection range spans more than one block
-  // 5. The selection current text is the empty string
+  // 5. The selection current text is only whitespace or
+  //    is the empty string
 
   const spansMultipleBlocks = (selection: Range) => {
     if (selection.anchor.path.length === selection.focus.path.length) {
@@ -65,7 +67,7 @@ function shouldHideToolbar(editor: ReactEditor) {
     !ReactEditor.isFocused(editor) ||
     Range.isCollapsed(selection) ||
     spansMultipleBlocks(selection) ||
-    SlateEditor.string(editor, selection) === '';
+    SlateEditor.string(editor, selection).trim() === '';
 }
 
 
@@ -262,32 +264,37 @@ const ToolbarButton = ({ icon, command, style, context, tooltip }: any) => {
   );
 };
 
+
 const DropdownToolbarButton = ({ icon, command, style, context, tooltip }: any) => {
+
   const editor = useSlate();
+  const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
 
-  const ref = useRef();
-
-  useEffect(() => {
-    if (ref !== null && ref.current !== null) {
-      ((window as any).$('.dropdown-toggle') as any).dropdown();
-    }
-  });
-
-  const onDone = (params: any) => command.execute(context, editor, params);
-  const onCancel = () => {};
+  const onDone = (params: any) => {
+    setIsPopoverOpen(false);
+    command.execute(context, editor, params);
+  };
+  const onCancel = () => setIsPopoverOpen(false);
 
   return (
-    <div ref={ref as any} className="dropdown"
-      data-toggle="tooltip" data-placement="top" title={tooltip}>
-      <button
-        className={`btn btn-sm dropdown-toggle ${style}`}
-        data-toggle={'dropdown'}
+    <Popover
+      onClickOutside={() => {
+        setIsPopoverOpen(false);
+      }}
+      isOpen={isPopoverOpen}
+      padding={5}
+      position={['bottom', 'top', 'left', 'right']}
+      content={() => (command as any).obtainParameters(editor, onDone, onCancel)}>
+      {ref => <button
+        ref={ref}
+        data-toggle="tooltip" data-placement="top" title={tooltip}
+        className={`btn btn-sm ${style}`}
+        onClick={() => setIsPopoverOpen(!isPopoverOpen)}
         type="button">
         <i className={icon}></i>
-      </button>
-      <div className="dropdown-menu dropdown-menu-right">
-        {(command as any).obtainParameters(editor, onDone, onCancel)}
-      </div>
-    </div>
+      </button>}
+    </Popover>
   );
+
 };
+

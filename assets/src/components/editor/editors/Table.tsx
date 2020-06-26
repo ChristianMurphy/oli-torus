@@ -8,6 +8,7 @@ import { EditorProps } from './interfaces';
 import guid from 'utils/guid';
 import { LabelledTextEditor } from 'components/TextEditor';
 import { SizePicker } from './SizePicker';
+import Popover from 'react-tiny-popover';
 
 // Helper functions for creating tables and its parts
 const td = (text: string) => ContentModel.create<ContentModel.TableData>(
@@ -44,6 +45,7 @@ const command: Command = {
 
   obtainParameters: (editor: ReactEditor,
     onDone: (params: any) => void, onCancel: () => void) => {
+
     return <SizePicker onHide={onCancel}
       onTableCreate={(rows, columns) => onDone({ rows, columns })} />;
   },
@@ -157,7 +159,7 @@ const DropdownMenu = (props: any) => {
   };
 
   return (
-    <div ref={ref as any} className="dropdown" style={style}>
+    <div ref={ref as any} className="dropdown" style={style} contentEditable={false}>
       <button type="button"
         style={buttonStyle}
         className="dropdown-toggle"
@@ -253,11 +255,11 @@ export const TableEditor = (props: TableProps) => {
   // events.
 
   return (
-    <div {...attributes} style={{ margin: '20px' }}>
+    <div style={{ margin: '20px' }}>
 
       <div>
         <table className="table table-bordered">
-          <tbody>
+          <tbody {...attributes} >
             {children}
           </tbody>
         </table>

@@ -125,8 +125,6 @@ defmodule OliWeb.Router do
 
     # Project display pages
     get "/:project_id", ProjectController, :overview
-    get "/:project_id/objectives", ProjectController, :objectives
-    get "/:project_id/objectives/:objective_slug/:action", ProjectController, :edit_objective
     get "/:project_id/publish", ProjectController, :publish
     post "/:project_id/publish", ProjectController, :publish_active
     post "/:project_id/review", ProjectController, :review_project
@@ -137,9 +135,7 @@ defmodule OliWeb.Router do
     delete "/:project_id", ProjectController, :delete
 
     # Objectives
-    post "/:project_id/objectives", ObjectiveController, :create
-    put "/:project_id/objectives/:objective_slug", ObjectiveController, :update
-    delete "/:project_id/objectives/:objective_slug", ObjectiveController, :delete
+    live "/:project_id/objectives", Objectives.Objectives
 
     # Curriculum
     live "/:project_id/curriculum", Curriculum.Container
@@ -167,6 +163,7 @@ defmodule OliWeb.Router do
     pipe_through [:api, :protected]
 
     put "/:project/resource/:resource", ResourceController, :update
+    get "/:project/link", ResourceController, :index
 
     post "/:project/activity/:activity_type", ActivityController, :create
     put "/:project/resource/:resource/activity/:activity", ActivityController, :update
@@ -241,6 +238,9 @@ defmodule OliWeb.Router do
     get "/signout", DeliveryController, :signout
     get "/open_and_free", DeliveryController, :list_open_and_free
 
+    # course link resolver
+    get "/link/:revision_slug", PageDeliveryController, :link
+
     get "/:context_id/page/:revision_slug", PageDeliveryController, :page
     get "/:context_id/page", PageDeliveryController, :index
     get "/:context_id/page/:revision_slug/attempt", PageDeliveryController, :start_attempt
@@ -260,7 +260,11 @@ defmodule OliWeb.Router do
   scope "/admin", OliWeb do
     pipe_through [:browser, :csrf_always, :protected, :admin]
     live_dashboard "/dashboard", metrics: OliWeb.Telemetry
-    live "/history/:slug", RevisionHistory
+  end
+
+  scope "/project", OliWeb do
+    pipe_through [:browser, :csrf_always, :protected, :workspace, :authoring, :authorize_project, :admin]
+    live "/:project_id/history/:slug", RevisionHistory
   end
 
   # routes only accessible to developers
