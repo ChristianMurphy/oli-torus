@@ -38,8 +38,7 @@ defmodule Oli.Delivery.Page.PageContextTest do
       Seeder.replace_pages_with([page1, %{id: p1.resource.id}, page2], container_resource, container_revision, publication)
 
       token_generator = fn _ -> "token" end
-
-      context = PageContext.create_page_context(section.context_id, p1.revision.slug, user.id, token_generator)
+      context = PageContext.create_page_context(section.context_id, p1.revision.slug, user, token_generator)
 
       # verify activities map
       assert Map.get(context.activities, a1.resource.id).model == "{}"
@@ -54,17 +53,17 @@ defmodule Oli.Delivery.Page.PageContextTest do
       # verify all other possible variants of prev and next:
 
       Seeder.replace_pages_with([p1.resource, page2], container_resource, container_revision, publication)
-      context = PageContext.create_page_context(section.context_id, p1.revision.slug, user.id, token_generator)
+      context = PageContext.create_page_context(section.context_id, p1.revision.slug, user, token_generator)
       assert context.previous_page == nil
       assert context.next_page.resource_id == page2.id
 
       Seeder.replace_pages_with([page2, p1.resource], container_resource, container_revision, publication)
-      context = PageContext.create_page_context(section.context_id, p1.revision.slug, user.id, token_generator)
+      context = PageContext.create_page_context(section.context_id, p1.revision.slug, user, token_generator)
       assert context.previous_page.resource_id == page2.id
       assert context.next_page == nil
 
       Seeder.replace_pages_with([p1.resource], container_resource, container_revision, publication)
-      context = PageContext.create_page_context(section.context_id, p1.revision.slug, user.id, token_generator)
+      context = PageContext.create_page_context(section.context_id, p1.revision.slug, user, token_generator)
       assert context.previous_page == nil
       assert context.next_page == nil
 
