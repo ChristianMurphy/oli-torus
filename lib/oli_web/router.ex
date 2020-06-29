@@ -191,7 +191,7 @@ defmodule OliWeb.Router do
     patch "/activity/:activity_attempt_guid/part/:part_attempt_guid", AttemptController, :save_part
     get "/activity/:activity_attempt_guid/part/:part_attempt_guid/hint", AttemptController, :get_hint
 
-    post "/activity/:activity_attempt_guid/part/:part_attempt_guid/outcome", AttemptController, :outcome
+    post "/activity/:activity_attempt_guid/part/:part_attempt_guid/outcome/scores", AttemptController, :outcome
 
     post "/activity/:activity_attempt_guid", AttemptController, :new_activity
     put "/activity/:activity_attempt_guid", AttemptController, :submit_activity

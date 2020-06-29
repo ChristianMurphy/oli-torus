@@ -37,15 +37,15 @@ function submitOutcome() {
       'Authorization': 'Bearer <%= @token %>',
     },
     body: JSON.stringify([{
-      "id": "https://lms.example.com/context/2923/lineitems/1/results/5323497",
-      "scoreOf": "https://lms.example.com/context/2923/lineitems/1",
       "userId": "5323497",
-      "resultScore": 0.83,
-      "resultMaximum": 1,
-      "comment": "This is exceptional work."
+      "scoreGiven": 0.83,
+      "scoreMaximum": 1,
+      "comment": "This is exceptional work.",
+      "activityProgress": "Completed",
+      "gradingProgress": "FullyGraded",
     }]),
   };
-  window.fetch('<%= @url %>', params)
+  window.fetch('<%= @url %>/scores', params)
     .then(response => response.json())
     .then(result => {
       console.log(result);
