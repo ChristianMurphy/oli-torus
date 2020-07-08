@@ -101,8 +101,9 @@ defmodule OliWeb.Router do
   scope "/", OliWeb do
     pipe_through [:browser, :csrf_always, :protected, :workspace, :authoring]
 
-    get "/projects", WorkspaceController, :projects
+    live "/projects", Projects.ProjectsLive
     get "/account", WorkspaceController, :account
+    put "/account", WorkspaceController, :update_author
     post "/account/theme", WorkspaceController, :update_theme
 
 
@@ -264,6 +265,11 @@ defmodule OliWeb.Router do
   scope "/admin", OliWeb do
     pipe_through [:browser, :csrf_always, :protected, :admin]
     live_dashboard "/dashboard", metrics: OliWeb.Telemetry
+  end
+
+  scope "/admin", OliWeb do
+    pipe_through [:browser, :csrf_always, :protected, :workspace, :authoring, :admin]
+    live "/accounts", Accounts.AccountsLive
   end
 
   scope "/project", OliWeb do
