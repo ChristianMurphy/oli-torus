@@ -46,8 +46,8 @@ defmodule Oli.Rendering.Activity.Html do
     case error do
       {:invalid, error_id, _error_msg} ->
         ["<div class=\"activity invalid alert alert-danger\">Activity is invalid. Please contact support with issue <strong>##{error_id}</strong></div>\n"]
-      {_, error_id, _error_msg} ->
-        ["<div class=\"activity error alert alert-danger\">An error occurred and this activity could not be shown. Please contact support with issue <strong>##{error_id}</strong></div>\n"]
+      {_, error_id, error_msg} ->
+        ["<div class=\"activity error alert alert-danger\">An error occurred and this activity could not be shown. Please contact support with issue <strong>##{error_id}</strong><p>#{error_msg}</p></div>\n"]
     end
   end
 
