@@ -36,14 +36,14 @@ function submitOutcome() {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer <%= @token %>',
     },
-    body: JSON.stringify([{
+    body: JSON.stringify({
       "userId": "5323497",
       "scoreGiven": 0.83,
       "scoreMaximum": 1,
       "comment": "This is exceptional work.",
       "activityProgress": "Completed",
       "gradingProgress": "FullyGraded",
-    }]),
+    }),
   };
   window.fetch('<%= @url %>/scores', params)
     .then(response => response.json())
